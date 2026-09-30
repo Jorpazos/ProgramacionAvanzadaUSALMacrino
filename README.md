@@ -45,6 +45,17 @@ El usuario de cada chofer es su DNI; la contraseña inicial la define el adminis
 - Estados del viaje: `ASIGNADO → EN_CURSO` (lo inicia el chofer) `→ FINALIZADO` (lo marca el chofer).
 - Sesión recordada con cookie (`RECORDARME`, 30 días). Al cerrar sesión se invalidan la Session y las cookies.
 
+## Base de datos
+
+La base es **MySQL 8** (driver `mysql-connector-j`, URL `jdbc:mysql://…`). Nota de transparencia: en el entorno donde se
+desarrolló no había un servidor MySQL, por lo que las pruebas manuales se hicieron contra MariaDB 10.11 (compatible con
+el mismo driver y el mismo script). Conviene correr el script en MySQL 8 antes de entregar.
+
+## Documentación
+
+`docs/Explicacion_y_Defensa_Parcial.pdf` explica el código línea por línea y lo defiende (se regenera con
+`python3 docs/generar_pdf.py`, requiere `reportlab`).
+
 ## Tests
 
 `mvn test` ejecuta las pruebas unitarias del cálculo de viaje y de las reglas del dominio.

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Descriptor de despliegue. Convive con las anotaciones:
+   - Login y Logout se declaran ACA (servlets por web.xml).
+   - Inicio, Choferes, Camiones, Viajes y MisViajes se declaran con @WebServlet.
+   - El filtro de autenticacion se declara aca; el de codificacion, con @WebFilter.
+-->
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+    <display-name>Logistica</display-name>
+
+    <!-- ===== Servlets declarados por web.xml ===== -->
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>ar.edu.usal.logistica.web.controlador.LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>ar.edu.usal.logistica.web.controlador.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
+    <!-- ===== Filtro de autenticacion y autorizacion por perfil ===== -->
+    <filter>
+        <filter-name>AutenticacionFilter</filter-name>
+        <filter-class>ar.edu.usal.logistica.web.filtro.AutenticacionFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AutenticacionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- ===== Session: expira a los 30 minutos sin actividad; cookie de sesion segura ===== -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+        <cookie-config>
+            <http-only>true</http-only>
+        </cookie-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
+    <!-- Pagina de entrada: http://host:puerto/logistica/ -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- ===== Paginas de error ===== -->
+    <error-page>
+        <error-code>403</error-code>
+        <location>/WEB-INF/jsp/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/WEB-INF/jsp/error.jsp</location>
+    </error-page>
+    <error-page>
+        <exception-type>java.lang.Throwable</exception-type>
+        <location>/WEB-INF/jsp/error.jsp</location>
+    </error-page>
+
+    <!-- ===== JSP: UTF-8 y sin scriptlets (todo con JSTL/EL) ===== -->
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <url-pattern>*.jspf</url-pattern>
+            <page-encoding>UTF-8</page-encoding>
+            <scripting-invalid>true</scripting-invalid>
+        </jsp-property-group>
+    </jsp-config>
+</web-app>

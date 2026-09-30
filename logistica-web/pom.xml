@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Proyecto MVC: controladores (servlets), vistas (JSP + JSTL) y filtros. Depende del proyecto DAO. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ar.edu.usal.logistica</groupId>
+        <artifactId>logistica-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>logistica-web</artifactId>
+    <packaging>war</packaging>
+    <name>Logistica - Web MVC</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>ar.edu.usal.logistica</groupId>
+            <artifactId>logistica-dao</artifactId>
+        </dependency>
+        <!-- Los que dice "provided" los aporta Tomcat 10.1 -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet.jsp</groupId>
+            <artifactId>jakarta.servlet.jsp-api</artifactId>
+            <version>3.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- JSTL: Tomcat no lo trae, va dentro del WAR -->
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>3.0.0</version>
+            <exclusions>
+                <!-- La API de EL ya la trae Tomcat: dentro del WAR causaria conflictos -->
+                <exclusion>
+                    <groupId>jakarta.el</groupId>
+                    <artifactId>jakarta.el-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- El WAR se llama "logistica": contexto http://host:puerto/logistica/ -->
+        <finalName>logistica</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

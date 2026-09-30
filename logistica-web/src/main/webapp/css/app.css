@@ -1,0 +1,6 @@
+body { background: #f4f6f9; }
+.navbar-brand small { font-weight: 400; opacity: .7; }
+.card-login { max-width: 420px; }
+.tabla-distancias th, .tabla-distancias td { text-align: center; font-size: .85rem; white-space: nowrap; }
+.tabla-distancias td.misma { background: #e9ecef; }
+.resumen-viaje dt { font-weight: 600; }

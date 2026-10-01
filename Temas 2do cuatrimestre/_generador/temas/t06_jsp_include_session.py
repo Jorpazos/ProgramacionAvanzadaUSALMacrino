@@ -1,0 +1,110 @@
+from comunes import pom_war, webxml
+
+B = "Codigo/020 - Clase 02-09/"
+W = B + "src/main/webapp/"
+
+TEMA = {
+ "carpeta": "Tema 06 - JSP (include y Session)",
+ "titulo": "Tema 06 · JSP: reutilización con include y manejo de Session",
+ "clases": "Clase 020 (02-09) · Teoría: «JSP» (Clase020_jsp.pdf)",
+ "intro": [
+  ("h1", "1. Reutilizar partes de una página: include"),
+  ("p", "En un sitio web muchas páginas comparten partes (la barra de navegación, el pie). En lugar de copiarlas en cada JSP, se escriben <b>una sola vez</b> en un archivo (<i>common/navbar.jsp</i>) y se <b>incluyen</b> en las demás. Hay dos formas:"),
+  ("tabla", [["", "Include estático", "Include dinámico"],
+    ["Sintaxis", "<i>&lt;%@ include file=\"common/navbar.jsp\" %&gt;</i> (directiva)", "<i>&lt;jsp:include page=\"common/navbar.jsp\" /&gt;</i> (acción)"],
+    ["Cuándo se incluye", "En <b>tiempo de traducción</b>: el contenido se copia dentro del JSP antes de compilarlo (queda un solo servlet)", "En <b>tiempo de ejecución</b>: en cada petición se ejecuta el otro JSP y se inserta su salida"],
+    ["Parámetros", "No admite", "Sí, con <i>&lt;jsp:param name=\"…\" value=\"…\"/&gt;</i>; el JSP incluido los lee con <i>request.getParameter</i>"],
+    ["Cuándo conviene", "Fragmentos fijos (cabecera, pie)", "Fragmentos que cambian según la petición (menú con la opción activa)"]]),
+  ("h1", "2. El problema del estado: Session"),
+  ("p", "HTTP es un protocolo <b>sin estado</b>: cada petición es independiente y el servidor «se olvida» del usuario entre una y otra. Para recordar quién es el usuario (carrito de compras, home banking, exámenes online, login) se usa la <b>Session</b>."),
+  ("p", "<b>Cómo funciona:</b> la primera vez que el usuario entra, el servidor crea un objeto <b>HttpSession</b> exclusivo para él y le envía un identificador (<b>JSESSIONID</b>) en una <b>cookie</b>. En cada petición siguiente el navegador devuelve esa cookie y el servidor recupera la sesión de ese usuario. Los datos se guardan <b>en el servidor</b> (en el cliente solo viaja el id)."),
+  ("tabla", [["Método de HttpSession (objeto implícito <i>session</i>)", "Qué hace"],
+    ["<b>setAttribute(\"clave\", objeto)</b>", "Guarda un dato en la sesión"],
+    ["<b>getAttribute(\"clave\")</b>", "Lee un dato (devuelve Object: hay que castear; null si no existe)"],
+    ["removeAttribute(\"clave\")", "Borra un dato"],
+    ["<b>invalidate()</b>", "Destruye toda la sesión (cerrar sesión / logout)"],
+    ["getId()", "Devuelve el identificador de la sesión"],
+    ["isNew()", "true si la sesión se acaba de crear"],
+    ["<b>setMaxInactiveInterval(segundos)</b>", "Tiempo de inactividad tras el cual la sesión expira"]]),
+  ("p", "<b>Alcances (scopes)</b> en una aplicación web, de menor a mayor vida: <i>page</i> (la página), <i>request</i> (una petición), <i>session</i> (el usuario durante su visita) y <i>application</i> (toda la aplicación, compartido por todos los usuarios)."),
+  ("nota", "<b>Para el parcial:</b> la Session guarda el usuario logueado y su perfil (admin o chofer); al cerrar sesión se hace <b>invalidate()</b> y se limpian las cookies. Ver «SesionUtil», «LoginServlet» y «LogoutServlet» de la solución del parcial."),
+ ],
+ "clases_detalle": [
+  {"titulo": "Clase 020 – 02-09: include estático y dinámico, y contador con Session",
+   "resumen": [("p", "Se arma un pequeño sitio con una <b>barra de navegación reutilizable</b> (<i>common/navbar.jsp</i>) incluida con <b>jsp:include</b> en dos páginas (<i>inicio.jsp</i> y <i>contacto.jsp</i>), pasándole <b>parámetros</b> para marcar la opción activa; y una página <b>session.jsp</b> con un contador guardado en la <b>Session</b>.")],
+   "archivos": {
+    B + "pom.xml": pom_war("clase-02-09"),
+    W + "WEB-INF/web.xml": webxml(),
+    W + "index.html": {
+     "rol": "Página de entrada con enlaces a los dos ejemplos de la clase.",
+     "defensa": "Es HTML puro: sirve como menú para llegar a las demostraciones.",
+     "bloques": [
+      ("", "DOCTYPE HTML5, head con charset y título."),
+      ("<body>", "Dos enlaces <b>&lt;a href&gt;</b>: a <i>inicio.jsp</i> («Uso de include») y a <i>session.jsp</i> («Session»), separados por un <i>&lt;br&gt;</i>."),
+     ]},
+    W + "common/navbar.jsp": {
+     "rol": "Fragmento reutilizable: la <b>barra de navegación</b> de Bootstrap. Se incluye desde otras páginas.",
+     "defensa": "Es el archivo que recibe los <b>parámetros</b> del <i>jsp:include</i>: <b>classActive</b> (se imprime dentro del class del enlace «Inicio») e <b>isContacto</b> (decide si se marca «Contacto» como activo). Así una única barra sirve a todas las páginas y resalta la opción actual. <b>Observación:</b> como se incluye dentro de otra página, este archivo no debería tener sus propias etiquetas <i>&lt;html&gt;</i>, <i>&lt;head&gt;</i> y <i>&lt;body&gt;</i>: genera HTML anidado (los navegadores lo toleran, pero no es válido). Además, si el parámetro <i>classActive</i> no llega, la expresión imprime «null» en el atributo class.",
+     "bloques": [
+      ("", "Comentario JSP generado por el IDE."),
+      ("<%@ page contentType", "Directiva <b>page</b>: tipo de contenido y codificación UTF-8."),
+      ("<html>", "Abre html y head con el <b>link a Bootstrap</b> (CDN)."),
+      ("<%\n    String classActive", "<b>Scriptlet</b> que lee con <b>request.getParameter(\"classActive\")</b> el parámetro enviado por <i>jsp:param</i> desde la página que incluye."),
+      ("<body>", "Abre el body y la etiqueta <b>nav</b> de Bootstrap (<i>navbar-dark bg-primary</i>: barra azul con letras claras)."),
+      ("<a class=\"navbar-brand\"", "Marca del sitio «Portal USAL 2026» (enlace a inicio) y contenedor <i>navbar-nav</i> del menú."),
+      ("<a class=\"nav-link <%=", "Enlace «Inicio»: una <b>expresión</b> imprime el valor de <i>classActive</i> (por ejemplo «active») dentro del atributo class, para resaltarlo."),
+      ("String active = request.getParameter(\"isContacto\")", "Lee el parámetro <i>isContacto</i>. Si viene en «true» imprime con <b>out.println</b> el enlace «Contacto» con la clase <b>active</b>; si no, el enlace normal. (Las comillas dobles internas se escapan con <i>\\\"</i>.)"),
+      ("</nav>", "Cierra las etiquetas nav, body y html."),
+     ]},
+    W + "inicio.jsp": {
+     "rol": "Página «Inicio»: incluye la barra de navegación con <b>jsp:include</b> y le pasa el parámetro <i>classActive</i>.",
+     "defensa": "Compara las dos formas de include en el propio código: queda <b>comentada</b> la versión estática (<i>&lt;%@ include file=…%&gt;</i>) y está activa la <b>dinámica</b> (<i>jsp:include</i>), que permite pasar parámetros con <i>jsp:param</i>. También se ve que el HTML de la barra original se movió a <i>navbar.jsp</i> (queda comentado como recuerdo). <b>Detalle:</b> como esta página no carga Bootstrap, los estilos le llegan por el link que está dentro de navbar.jsp.",
+     "bloques": [
+      ("", "Apertura de html, head y título."),
+      ("<body class=\"bg-light\">", "Body con fondo gris claro de Bootstrap (<i>bg-light</i>). El bloque siguiente es un <b>comentario JSP</b> con el HTML de la barra que antes estaba aquí y ahora se reutiliza."),
+      ("<%--Include estatico--%>", "Comentarios: «Include estático» y la directiva <b>&lt;%@ include file=\"common/navbar.jsp\"%&gt;</b> desactivada. El estático copia el archivo en tiempo de traducción y no admite parámetros."),
+      ("<jsp:include page", "<b>Include dinámico</b>: en cada petición ejecuta <i>common/navbar.jsp</i> e inserta su resultado. Con <b>&lt;jsp:param name=\"classActive\" value=\"active\"/&gt;</b> le envía el parámetro que marca «Inicio» como opción activa."),
+      ("<div class=\"container\">", "Contenido de la página: un título y un párrafo de texto de relleno (lorem ipsum). Cierra body y html."),
+     ]},
+    W + "contacto.jsp": {
+     "rol": "Página «Contacto»: igual que inicio pero con otro parámetro (<i>isContacto</i>).",
+     "defensa": "Mismo include dinámico, con otro parámetro: así la barra marca como activo «Contacto». Es la prueba de que <i>jsp:include</i> permite que <b>el mismo fragmento se comporte distinto</b> según quién lo incluya.",
+     "bloques": [
+      ("", "Apertura de html, head y título."),
+      ("<body class=\"bg-light\">", "Body con fondo claro y la barra original comentada."),
+      ("<%--Include dinamico--%>", "Comentario «Include dinámico» y el <b>jsp:include</b> de <i>common/navbar.jsp</i> con el parámetro <b>isContacto = true</b>."),
+      ("<div class=\"container\">", "Contenido: título «Página de contacto» y un correo de ejemplo. Cierra body y html."),
+     ]},
+    W + "session.jsp": {
+     "rol": "Ejemplo de <b>Session</b>: un contador que se guarda en la sesión del usuario.",
+     "defensa": "Muestra el ciclo: <b>getAttribute</b> (leer) → incrementar → <b>setAttribute</b> (guardar). <b>Atención:</b> al final del scriptlet el código hace <b>removeAttribute</b> y <b>session.invalidate()</b>; como se ejecutan en cada petición, el contador <b>siempre muestra 1</b> (nunca llega a acumular). Esas dos líneas están para mostrar cómo se borra un dato y cómo se destruye la sesión; para ver un contador que sube hay que comentarlas. Como además cada petición destruye la sesión, el <b>Session ID</b> que se muestra cambia en cada visita (cada vez se crea una sesión nueva).",
+     "bloques": [
+      ("", "Comentario JSP del IDE."),
+      ("<%@ page contentType", "Directiva page (UTF-8)."),
+      ("<html>", "Apertura de html, head con título y Bootstrap."),
+      ("<body class=\"bg-light p-5\">", "Body con padding y una tarjeta (<i>card</i>) de Bootstrap con encabezado rojo «Ejemplo de contador»."),
+      ("<div class=\"card-body text-center", "Cuerpo de la tarjeta. Comienza el <b>scriptlet</b>."),
+      ("int contador = 0;", "Variable local para el valor a mostrar. Luego lee el atributo <b>miContador</b> de la sesión con <b>getAttribute</b> y lo castea a <i>Integer</i> (devuelve null la primera vez)."),
+      ("session.setMaxInactiveInterval(5000)", "Define que la sesión expira tras <b>5000 segundos</b> de inactividad."),
+      ("if(contadorSession != null", "Si ya había contador, le suma 1 y lo <b>guarda de nuevo</b> con <b>setAttribute</b>. Si no (primera visita), arranca en 1 y también lo guarda."),
+      ("/*Borro valor del atributo*/", "<b>removeAttribute(\"miContador\")</b> borra el dato y <b>session.invalidate()</b> destruye la sesión completa. Por ejecutarse siempre, el contador no avanza (ver defensa)."),
+      ("<p class=\"fs-4\">", "Fuera del scriptlet: muestra con <b>expresiones</b> el valor del contador y el <b>Session ID</b> (<i>session.getId()</i>)."),
+      ("<a class=\"btn btn-outline-danger\"", "Botón que vuelve a pedir la misma página (nueva petición) para «incrementar»."),
+     ]},
+   }},
+ ],
+ "cierre": [
+  ("h1", "Resumen para estudiar"),
+  ("li", "Include <b>estático</b> (<i>&lt;%@ include %&gt;</i>): se copia al traducir, sin parámetros. Include <b>dinámico</b> (<i>&lt;jsp:include&gt;</i>): se ejecuta en cada petición y admite <i>&lt;jsp:param&gt;</i>."),
+  ("li", "HTTP no tiene estado; la <b>Session</b> lo simula: un objeto por usuario en el servidor + cookie JSESSIONID en el navegador."),
+  ("li", "HttpSession: setAttribute, getAttribute, removeAttribute, invalidate, getId, isNew, setMaxInactiveInterval."),
+  ("li", "Scopes: page &lt; request &lt; session &lt; application."),
+  ("h1", "Preguntas típicas"),
+  ("q", "¿Cuál es la diferencia entre include estático y dinámico?"),
+  ("p", "El estático inserta el código del otro archivo al traducir el JSP (un solo servlet); el dinámico lo ejecuta en cada petición, permite pasar parámetros y puede dar resultados distintos cada vez."),
+  ("q", "¿Dónde se guardan los datos de la Session?"),
+  ("p", "En el servidor. Al cliente solo viaja el identificador JSESSIONID en una cookie."),
+  ("q", "¿Cómo se cierra una sesión?"),
+  ("p", "Con session.invalidate(), que destruye la sesión y sus atributos; además conviene expirar las cookies relacionadas."),
+ ],
+}

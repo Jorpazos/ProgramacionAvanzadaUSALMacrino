@@ -1,61 +1,52 @@
-# Parcial 2do Cuatrimestre 2025 – Programación Avanzada (USAL Pilar)
+# Programación Avanzada – USAL Sede Pilar
 
-Aplicación web de una empresa de logística: ABM de camiones y choferes, carga de viajes con cálculo de
-tiempo y tanques, y pantalla de chofer para iniciar/finalizar sus viajes.
+Material ordenado del 2.º cuatrimestre: el **parcial modelo** resuelto y los **temas de cursada** con un PDF por tema.
 
-**Stack:** Java 17 · Maven multi-módulo · Servlets/JSP 6 (Jakarta EE 10, Tomcat 10.1) · JSTL · JDBC puro · MySQL 8 · Bootstrap 5 + SweetAlert2.
+```
+.
+├── 2° Parcial modelo/              ← enunciado del parcial (15/10/2025) + solución completa + PDF de defensa
+│   ├── Parcial 2do cuatrimestre - 151025.pdf
+│   ├── logistica-dao/  logistica-web/  db/  pom.xml
+│   ├── docs/Explicacion_y_Defensa_Parcial.pdf
+│   └── README.md                   ← cómo instalar y ejecutar
+└── Temas 2do cuatrimestre/         ← un tema por carpeta, cada una con su PDF explicativo
+    ├── Tema 01 - JDBC (Statement, PreparedStatement y CallableStatement)/   clases 014 y 015
+    ├── Tema 02 - Singleton, DAO con transacciones y Maven multimodulo/        clase 016
+    ├── Tema 03 - HTML5 (estructura, formularios y tablas)/                    clase 017
+    ├── Tema 04 - JavaScript y manejo del DOM/                                 clase 018
+    ├── Tema 05 - Servidor web y JSP basico (scriptlets y formularios)/        clase 019
+    ├── Tema 06 - JSP (include y Session)/                                     clase 020
+    ├── Tema 07 - JSTL y Cookies/                                              clase 021
+    ├── Tema 08 - Servlets (web.xml, anotaciones, forward)/                    clase 022
+    ├── Tema 09 - AJAX con jQuery y SweetAlert/                                clase 023
+    ├── Guia de estudio integral (2do parcial).txt
+    └── _generador/                 ← scripts que generan los PDF (reportlab)
+```
 
-## Estructura (entregables del enunciado)
+Cada carpeta de tema contiene:
 
-| Elemento | Ubicación |
+| Elemento | Contenido |
 |---|---|
-| 01 – Código fuente Maven, proyectos DAO y MVC separados | `logistica-dao/` (dominio + DAO) y `logistica-web/` (MVC) |
-| 02 – Script DDL de la base de datos | `db/01_ddl_logistica.sql` (+ `db/02_datos_iniciales.sql` con datos de prueba) |
-| Explicación línea por línea y defensa del código | `docs/Explicacion_y_Defensa_Parcial.pdf` |
+| `Tema NN - ….pdf` | Explicación del tema (cómo es, cómo funciona) + **todo el código de las clases explicado línea por línea**, con la forma de defenderlo y preguntas típicas |
+| `Codigo/` | Código fuente original de las clases del tema (copiado del repositorio compartido de la cátedra) |
+| `Teoria/` | Los PDF de teoría del profesor correspondientes al tema |
 
-## Cómo ejecutarlo
+## Criterio de división
 
-1. **Base de datos** (MySQL 8):
-   ```
-   mysql -u root -p < db/01_ddl_logistica.sql
-   mysql -u root -p < db/02_datos_iniciales.sql
-   ```
-2. **Credenciales de conexión**: `logistica-dao/src/main/resources/db.properties` (por defecto `root`/`root`, base `logistica`).
-   También se pueden pasar con las variables de entorno `DB_URL`, `DB_USER`, `DB_PASSWORD`.
-3. **Compilar**: `mvn clean package` → genera `logistica-web/target/logistica.war`.
-4. **Desplegar** el WAR en Tomcat 10.1 (carpeta `webapps/`). La aplicación queda en
-   `http://localhost:8080/logistica/`.
+* **Parcial modelo**: la práctica del parcial del 15/10/2025 (aplicación de logística) con su solución y su defensa.
+* **Temas del 2.º cuatrimestre**: clases 016 a 023 (05-08 al 23-09), una carpeta por tema. Se agregó como **Tema 01** el repaso de JDBC (clases 014 y 015, que se dictaron al cierre del 1.º cuatrimestre) porque el parcial exige los tres tipos de sentencia JDBC y las clases posteriores se apoyan en eso.
+* Las clases 017 a 023 dan teoría en PDFs que abarcan varias clases (por ejemplo `Clase020_jsp.pdf` cubre los temas 05, 06 y 07); por eso algunos PDF de teoría aparecen copiados en más de un tema.
 
-## Usuarios de prueba
+## Regenerar los PDF de los temas
 
-| Perfil | Usuario | Contraseña |
-|---|---|---|
-| Administrador | `admin` | `admin123` |
-| Chofer (Juan Pérez, cat. C) | `30111222` | `chofer123` |
-| Chofer (María Gómez, cat. B) | `28555666` | `chofer123` |
+```
+pip install reportlab
+python3 "Temas 2do cuatrimestre/_generador/generar_pdfs.py"        # todos
+python3 "Temas 2do cuatrimestre/_generador/generar_pdfs.py" 7      # solo el tema 7
+```
 
-El usuario de cada chofer es su DNI; la contraseña inicial la define el administrador al crearlo.
+El generador verifica que **ninguna línea de código quede sin explicar**.
 
-## Reglas de negocio implementadas
+## Importante: `javax` (Tomcat 9) vs `jakarta` (Tomcat 10)
 
-- Destinos válidos: CABA, Córdoba, Corrientes, Formosa, La Plata, La Rioja, Mendoza y Neuquén. Distancias en la tabla `distancia`.
-- **Tiempo de viaje** = `ceil(km / 200)` días. **Tanques** = `ceil(km × consumo_l_por_km / capacidad_tanque)`.
-- Un chofer solo puede manejar camiones que tiene autorizados **y** cuyas toneladas entren en su categoría (A=10 t, B=20 t, C=30 t, D=40 t).
-- Al cargar un viaje se ofrecen solo los camiones disponibles (sin viaje `ASIGNADO` ni `EN_CURSO`).
-- Estados del viaje: `ASIGNADO → EN_CURSO` (lo inicia el chofer) `→ FINALIZADO` (lo marca el chofer).
-- Sesión recordada con cookie (`RECORDARME`, 30 días). Al cerrar sesión se invalidan la Session y las cookies.
-
-## Base de datos
-
-La base es **MySQL 8** (driver `mysql-connector-j`, URL `jdbc:mysql://…`). Nota de transparencia: en el entorno donde se
-desarrolló no había un servidor MySQL, por lo que las pruebas manuales se hicieron contra MariaDB 10.11 (compatible con
-el mismo driver y el mismo script). Conviene correr el script en MySQL 8 antes de entregar.
-
-## Documentación
-
-`docs/Explicacion_y_Defensa_Parcial.pdf` explica el código línea por línea y lo defiende (se regenera con
-`python3 docs/generar_pdf.py`, requiere `reportlab`).
-
-## Tests
-
-`mvn test` ejecuta las pruebas unitarias del cálculo de viaje y de las reglas del dominio.
+El código de las clases usa `javax.servlet` (Servlet 4.0, **Tomcat 9**). La solución de `2° Parcial modelo` está escrita con `jakarta.servlet` (Servlet 6.0, **Tomcat 10.1**). Un WAR `jakarta` **no corre en Tomcat 9** (y viceversa). Ver el README del parcial.

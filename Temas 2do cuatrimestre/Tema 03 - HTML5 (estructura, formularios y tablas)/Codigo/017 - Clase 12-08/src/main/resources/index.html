@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clase 12-08</title>
+</head>
+<body>
+    <!--Etiqueta HTML5 - semantica-->
+    <header>
+        <h1>Sistema de Gestión Bancaria</h1>
+        <p>Modulo de Administración y Gestión de Clientes</p>
+    </header>
+
+    <nav>
+        <!--Lista desordenadas - viñetas-->
+        <ul>
+            <li>Incio</li>
+            <li>Clientes</li>
+            <li>Cuentas</li>
+        </ul>
+    </nav>
+
+    <main>
+        <section>
+            <h2>Registro de nuevos clientes</h2>
+
+            <!--Formulario para el alta de clientes-->
+            <form>
+                <div>
+                    <label for="nombre">Nombre completo: </label>
+                    <input type="text" id="nombre" placeholder="Ej : Martin Lopez" required>
+                </div>
+                <div>
+                    <label>Email: </label>
+                    <input type="email" placeholder="Ej : mail@dominio.com">
+                </div>
+                <div>
+                    <label>Password: </label>
+                    <input type="password">
+                </div>
+                <div>
+                    <label>Numero Tel: </label>
+                    <input type="number">
+                </div>
+                <div>
+                    <label>Fecha Nacimiento: </label>
+                    <input type="date">
+                </div>
+                <div>
+                    <label>Tipo de cuenta: </label>
+                    <select>
+                        <option value="caja ahorro">Caja Ahorro</option>
+                        <option value="cta corriente">Cuenta Corriente</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Estado civil: </label>
+                    <input type="radio" name="estadoCivil">
+                    <label>Soltero</label>
+                    <input type="radio" name="estadoCivil">
+                    <label>Casado</label>
+                </div>
+                <div>
+                    <input type="checkbox">
+                    <label>Acepto terminos y condiciones</label>
+                </div>
+                <div>
+                    <button type="submit">Guardar Cliente</button>
+                    <button type="reset">Limpiar Formulario</button>
+                </div>
+            </form>
+        </section>
+        <hr>
+        <section>
+            <h2>Listado de clientes</h2>
+
+            <!--Tabla para visualizar los datos-->
+            <table border="1">
+                <!--Definir los encabezados-->
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                    </tr>
+                </thead>
+                <!--Definir el cuerpo-->
+                <tbody>
+                    <tr>
+                        <td>101</td>
+                        <td>Maria Gomez</td>
+                    </tr>
+                    <tr>
+                        <td>102</td>
+                        <td>Carlos Rodriguez</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Sistema Bancario - USAL</p>
+    </footer>
+
+</body>
+</html>

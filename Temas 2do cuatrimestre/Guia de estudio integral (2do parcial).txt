@@ -1,0 +1,187 @@
+Guía de Estudio Integral: Arquitectura y Programación Avanzada (2do Parcial)
+
+1. Construcción y Estructura con Maven
+
+La adopción de Maven en el ecosistema del desarrollo profesional no representa únicamente la elección de una herramienta de automatización, sino una decisión estratégica orientada a garantizar la paridad de entornos y la configuración como código. Al estandarizar el ciclo de vida del desarrollo, Maven elimina las discrepancias entre los entornos de desarrollo, pruebas y producción, permitiendo que la gestión de dependencias sea un proceso reproducible, centralizado y coherente con las exigencias de la ingeniería de software moderna.
+
+Gestión del Proyecto y Archivo pom.xml
+
+El Project Object Model (POM), materializado en el archivo pom.xml, constituye el manifiesto soberano del proyecto. Actúa como el núcleo de configuración donde se declaran metadatos, dependencias externas, perfiles de construcción y plugins. Su rol es centralizar la inteligencia del proyecto, permitiendo que la herramienta resuelva la complejidad técnica de forma autónoma.
+
+Ciclo de Vida de Construcción (Lifecycle)
+
+El ciclo de vida de construcción se rige por fases secuenciales cuya ejecución garantiza la integridad técnica del artefacto:
+
+* clean: Fase de saneamiento que elimina los directorios de salida (target) para asegurar que no existan residuos de compilaciones previas.
+* compile: Transformación técnica del código fuente en bytecode ejecutable.
+* test: Validación de la lógica de negocio mediante la ejecución de pruebas unitarias antes de la distribución.
+* package: Consolidación del código compilado en un formato de distribución estándar (JAR, WAR).
+* install: Publicación del artefacto en el repositorio local, permitiendo su uso como dependencia en otros proyectos del ecosistema.
+
+Estructura Multimódulo y Maven Parent
+
+En sistemas complejos, la arquitectura se beneficia del uso de un Maven Parent para coordinar estructuras multimódulo. Respetando la organización de paquetes del dominio (edu.usal.negocio.dao, edu.usal.dominio), esta jerarquía justifica la separación técnica de responsabilidades. Mientras el módulo DAO se encapsula para la persistencia, el módulo Web/MVC gestiona la presentación. Esta compartimentación es fundamental para la mantenibilidad y la escalabilidad, permitiendo evoluciones tecnológicas en una capa sin comprometer la estabilidad de las demás.
+
+Esta robustez estructural proporciona el andamiaje necesario para que, dentro de dichos paquetes, los patrones de diseño operen con una cohesión máxima.
+
+2. Arquitectura Multicapa y Patrones de Diseño
+
+La arquitectura multicapa se fundamenta en el desacoplamiento sistémico. Aislar la lógica de negocio de los detalles de implementación del acceso a datos no es una opción estética, sino un requisito técnico para construir sistemas escalables donde las reglas operativas permanezcan inalteradas ante cambios en la infraestructura de persistencia.
+
+Teoría de Patrones de Diseño
+
+Según la doctrina de la cátedra, un Patrón de Diseño es el "esqueleto de las soluciones a problemas comunes en el desarrollo de software". Para ser validado como tal, debe haber demostrado efectividad y ser reutilizable. Se clasifican funcionalmente en:
+
+* Creacionales: Gestionan los mecanismos de instanciación y configuración de objetos (ej. DAO, Factory, Singleton).
+* Estructurales: Se centran en cómo las clases y objetos se agrupan para formar estructuras de mayor complejidad, separando interfaces de implementaciones.
+* De Comportamiento: Describen la comunicación y el flujo de mensajes entre los componentes del sistema.
+
+Patrón DAO (Data Access Object)
+
+Este patrón abstrae la lógica de acceso a datos de la lógica de negocio. Su implementación estratégica requiere:
+
+1. Entidad (POJO/DTO): Representación de los datos del negocio mediante clases simples con atributos, constructores y métodos accesores (getters/setters).
+2. Interfaz DAO: Definición abstracta de las operaciones CRUD (Create, Read, Update, Delete) sin acoplamiento tecnológico.
+3. Implementación (DAOImpl): Lógica específica de almacenamiento. Es común que las implementaciones iniciales o de prueba utilicen estructuras en memoria como ArrayList dentro de su constructor (Mocking), permitiendo el desarrollo de la lógica de negocio antes de la integración con bases de datos reales.
+
+Patrón Factory y Singleton
+
+* Factory: Actúa como el puente arquitectónico que permite la selección dinámica de implementaciones. Facilita, por ejemplo, el intercambio fluido entre una persistencia en memoria (ArrayList) y una persistencia en base de datos (JDBC) sin modificar el código que consume el servicio.
+* Singleton: Aplicado a la clase ConexionBD, garantiza la existencia de una única instancia en toda la aplicación. Se implementa mediante un constructor privado, un atributo estático y un método getInstance(), optimizando así el uso de recursos críticos.
+
+Patrón MVC (Model-View-Controller)
+
+Este patrón organiza la interacción del sistema separando la Vista (interfaz de usuario), el Modelo (datos y lógica) y el Controlador (mediador de flujo). Esta división asegura que la presentación evolucione independientemente de la lógica de control.
+
+Para que estos patrones trasciendan el entorno de pruebas, es imperativo establecer una capa de persistencia robusta mediante el estándar JDBC.
+
+3. Persistencia Avanzada con JDBC
+
+La persistencia de datos asegura que la información sobreviva a la ejecución de la JVM. JDBC (Java Database Connectivity) es el puente estándar que habilita la comunicación entre el paradigma orientado a objetos de Java y el modelo relacional de las bases de datos.
+
+Arquitectura de Drivers y JDBC Tipo 4
+
+En arquitecturas de tres capas, el Driver Tipo 4 es el estándar de oro. Al estar desarrollado íntegramente en Java, se comunica directamente con el protocolo de la base de datos sin depender de librerías nativas, garantizando portabilidad y eficiencia.
+
+Ejecución de Sentencias (Statements)
+
+La interacción se gestiona a través de interfaces especializadas:
+
+Tipo de Sentencia	Uso Principal	Características Clave
+Statement	SQL estático.	Vulnerable a inyecciones SQL; menor rendimiento.
+PreparedStatement	Consultas parametrizadas (?).	Seguridad contra inyecciones, pre-compilación y alto rendimiento.
+CallableStatement	Procedimientos almacenados.	Manejo de parámetros de entrada (IN) y salida (OUT).
+
+Gestión de Transacciones Atómicas y Recursos
+
+Como desarrolladores senior, debemos garantizar la integridad y el manejo de recursos. El flujo transaccional debe controlarse manualmente para asegurar la atomicidad:
+
+try {
+    conexion.setAutoCommit(false);
+    // Ejecución de sentencias SQL
+    conexion.commit();
+} catch (SQLException e) {
+    conexion.rollback();
+} finally {
+    // Gestión crítica de recursos para evitar fugas de memoria
+    if (resultSet != null) resultSet.close();
+    if (statement != null) statement.close();
+    if (conexion != null) conexion.close();
+}
+
+
+Interfaz ResultSet y Metadatos
+
+El ResultSet permite navegar los resultados mediante cursores (configurables como scrollable o updatable). Complementariamente, ResultSetMetaData proporciona información sobre la estructura de las tablas en tiempo de ejecución, permitiendo la creación de sistemas genéricos y dinámicos.
+
+Una vez asegurada la persistencia, el siguiente paso es exponer esta lógica a través de una interfaz web gestionada por Servlets.
+
+4. Desarrollo Web Servidor (Servlets)
+
+Los Servlets son componentes del lado del servidor que actúan como controladores de tráfico HTTP, gestionando el ciclo de vida de las peticiones dentro de un contenedor web.
+
+Anatomía y Ciclo de Vida del Servlet
+
+Al extender de HttpServlet, el componente se somete a un ciclo de vida estrictamente regulado:
+
+1. init(): Inicialización y carga de configuraciones.
+2. service(): Despacho de peticiones hacia métodos específicos (doGet, doPost).
+3. destroy(): Liberación de recursos previo a la descarga del componente. El contenedor web implementa procesamiento multihilo, permitiendo que una única instancia del Servlet atienda concurrentemente múltiples peticiones, optimizando el rendimiento del servidor.
+
+Configuración y Mapeo
+
+La declaración de Servlets ha evolucionado de la configuración externa en el descriptor de despliegue web.xml (utilizando servlet-name y url-pattern) hacia un enfoque declarativo mediante la anotación @WebServlet, simplificando el mantenimiento del código.
+
+Gestión de Peticiones y Respuestas
+
+Es fundamental distinguir entre las técnicas de navegación:
+
+* sendRedirect: El servidor instruye al cliente a realizar una nueva petición independiente (cambio de URL, pérdida de datos del request original).
+* RequestDispatcher.forward: Transferencia interna en el servidor. Es más eficiente y permite compartir objetos entre componentes sin que el cliente detecte la redirección.
+
+Protocolo HTTP y Tipos MIME
+
+La comunicación cliente-servidor se basa en códigos de estado (200 OK, 302 Redirect, 404 Not Found, 500 Internal Error) y en la definición del Tipo MIME (text/html, application/json), que informa al navegador cómo debe interpretar la respuesta recibida.
+
+Aunque los Servlets controlan la orquestación lógica, la visualización dinámica y la gestión de la experiencia del usuario se delegan a las JSPs.
+
+5. Vistas Web, Gestión de Estado y Persistencia en Cliente
+
+Las páginas JSP y la gestión de sesiones son los pilares de la personalización y la persistencia de estado en aplicaciones web JEE.
+
+Elementos JSP y Objetos Implícitos
+
+Una JSP permite inyectar lógica mediante expresiones (<%= %>), scriptlets (<% %>) y declaraciones (<%! %>). El contenedor expone automáticamente cuatro pilares de ámbito (scope) a través de objetos implícitos:
+
+* request: Datos de la petición actual.
+* session: Datos persistentes del usuario durante su navegación.
+* application (ServletContext): Datos globales compartidos por toda la aplicación.
+* out: Objeto para la escritura de la respuesta.
+
+Manejo de Sesiones (HttpSession) y Cookies
+
+La persistencia de estado se gestiona mediante HttpSession (setAttribute, getAttribute, invalidate), permitiendo el control de acceso y la seguridad. Para persistencia en el lado del cliente, se utilizan las Cookies, enviadas vía addCookie y configurables mediante setMaxAge para definir su vigencia temporal.
+
+Librería de Etiquetas JSTL
+
+Para mantener el desacoplamiento arquitectónico, es imperativo eliminar el código Java de las vistas mediante JSTL. Etiquetas como <c:forEach>, <c:if> y <c:choose> promueven una separación clara entre la lógica de presentación y la lógica de negocio, resultando en un código más limpio y profesional.
+
+Una vez que la vista está desacoplada, la interactividad moderna se potencia mediante el uso de JavaScript y AJAX.
+
+6. Frontend Dinámico: JS, AJAX y SweetAlert
+
+La evolución del frontend hacia interfaces dinámicas permite una comunicación asincrónica que evita la recarga total del navegador, mejorando sustancialmente la experiencia del usuario (UX).
+
+Manipulación del DOM y Eventos
+
+Trasladando el paradigma de programación dirigida por eventos de Swing (donde una fuente genera una señal capturada por un escuchador), en la web utilizamos los objetos window y document. Los listeners de JavaScript capturan las acciones del usuario sobre el DOM, ejecutando lógica inmediata de forma análoga al modelo de delegación de eventos de Java.
+
+Comunicación Asincrónica (Fetch API)
+
+El flujo asincrónico es el motor que impulsa las aplicaciones modernas. Mediante fetch, el frontend puede enviar datos (vía URLSearchParams o JSON) al Servlet y procesar la respuesta sin bloquear la interfaz. Esta técnica es el núcleo que permite que un dashboard de gestión se mantenga actualizado en tiempo real.
+
+UI/UX Interactiva con SweetAlert
+
+Para profesionalizar la respuesta visual, se integra SweetAlert. La función Swal.fire reemplaza los diálogos nativos del navegador por modales estéticos que informan al usuario sobre el éxito o fracaso de las operaciones, proporcionando un feedback inmediato y de alta calidad.
+
+La integración de estas tecnologías frontend con la robustez del backend se manifiesta en la resolución de problemas complejos como el sistema de logística.
+
+7. Caso Práctico Integrador: Simulacro de Logística
+
+El dominio de la logística exige una integración armónica de seguridad, validación de reglas de negocio y persistencia transaccional.
+
+Flujo de Autenticación y Roles
+
+El sistema implementa una distinción crítica de roles: el Admin accede a la gestión estratégica, mientras que el Chofer gestiona la carga operativa. La HttpSession actúa como el mecanismo de seguridad que valida el perfil en cada petición, protegiendo los recursos del sistema.
+
+Gestión de Viajes y Cálculo de Insumos
+
+El flujo integrado de una operación logística se desarrolla de la siguiente manera:
+
+1. Frontend: Captura de origen y destino utilizando una Matriz de distancias.
+2. Comunicación: Envío de datos al servidor mediante una petición fetch asincrónica.
+3. Servicio: El Servlet delega en la Capa de Servicio la validación de las reglas de negocio y el cálculo preciso del consumo de combustible.
+4. Persistencia: La lógica se persiste mediante el Patrón DAO, utilizando una transacción JDBC para asegurar que el registro del viaje sea atómico.
+5. Feedback: Tras la confirmación del servidor, el frontend actualiza la interfaz dinámicamente y notifica el éxito mediante SweetAlert.
+
+Conclusión de la Guía: El éxito en el desarrollo de sistemas empresariales y en la evaluación parcial reside en el respeto absoluto a la arquitectura de capas. Comprender cómo fluye la información desde el evento en el frontend hasta el commit en la base de datos es la marca de un arquitecto de sistemas profesional.

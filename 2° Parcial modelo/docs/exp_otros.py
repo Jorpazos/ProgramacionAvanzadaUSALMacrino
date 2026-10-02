@@ -73,7 +73,7 @@ EXPLICACIONES = {
  "bloques": [
   ("", "Comentario con la posibilidad de sobreescribir por variables de entorno."),
   ("db.driver", "Clase del driver JDBC de MySQL."),
-  ("db.url", "URL JDBC: servidor, puerto, base <b>logistica</b>; <i>useSSL=false</i> y <i>allowPublicKeyRetrieval</i> facilitan la conexión local con MySQL 8; <i>connectionTimeZone=LOCAL</i> y <i>forceConnectionTimeZoneToSession</i> hacen que fechas y NOW() de la base usen la misma zona horaria que Java."),
+  ("db.url", "URL JDBC: servidor, puerto, base <b>logistica</b>; <i>useSSL=false</i> y <i>allowPublicKeyRetrieval</i> facilitan la conexión local con MySQL 8; no se fuerza la zona horaria de la sesión (<i>connectionTimeZone</i>) porque en MySQL de Windows las tablas de zonas horarias vienen vacías y la conexión fallaría con «Unknown or incorrect time zone»."),
   ("db.user", "Usuario de la base (cambiar por el propio)."),
   ("db.password", "Contraseña de la base (cambiar por la propia)."),
  ]},

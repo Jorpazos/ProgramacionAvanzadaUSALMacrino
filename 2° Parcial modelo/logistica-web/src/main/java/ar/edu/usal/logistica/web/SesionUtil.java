@@ -2,10 +2,10 @@ package ar.edu.usal.logistica.web;
 
 import ar.edu.usal.logistica.modelo.Usuario;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Centraliza el manejo de la Session y de la cookie "recordarme" para que
@@ -44,12 +44,12 @@ public final class SesionUtil {
 
     /** Crea la cookie persistente. HttpOnly: JavaScript no puede leerla; SameSite=Lax: no viaja en POST de otros sitios. */
     public static void guardarCookie(HttpServletRequest req, HttpServletResponse resp, String token) {
-        resp.addCookie(crearCookie(req, token, DIAS_RECORDAR * 24 * 60 * 60));
+        enviarCookie(resp, crearCookie(req, token, DIAS_RECORDAR * 24 * 60 * 60));
     }
 
     /** Borra del navegador la cookie de recordarme y la de la Session (JSESSIONID). */
     public static void limpiarCookies(HttpServletRequest req, HttpServletResponse resp) {
-        resp.addCookie(crearCookie(req, "", 0));
+        enviarCookie(resp, crearCookie(req, "", 0));
         Cookie jsession = new Cookie("JSESSIONID", "");
         jsession.setPath(rutaCookie(req));
         jsession.setMaxAge(0);
@@ -63,8 +63,27 @@ public final class SesionUtil {
         cookie.setSecure(req.isSecure());
         cookie.setPath(rutaCookie(req));
         cookie.setMaxAge(segundos);
-        cookie.setAttribute("SameSite", "Lax");
         return cookie;
+    }
+
+    /**
+     * Servlet 4.0 (Tomcat 9) no tiene Cookie.setAttribute, asi que la cookie se envia como cabecera
+     * Set-Cookie agregando SameSite=Lax a mano.
+     */
+    private static void enviarCookie(HttpServletResponse resp, Cookie cookie) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(cookie.getName()).append('=').append(cookie.getValue());
+        sb.append("; Path=").append(cookie.getPath());
+        sb.append("; Max-Age=").append(cookie.getMaxAge());
+        if (cookie.getMaxAge() == 0) {
+            sb.append("; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
+        }
+        sb.append("; HttpOnly");
+        if (cookie.getSecure()) {
+            sb.append("; Secure");
+        }
+        sb.append("; SameSite=Lax");
+        resp.addHeader("Set-Cookie", sb.toString());
     }
 
     private static String rutaCookie(HttpServletRequest req) {

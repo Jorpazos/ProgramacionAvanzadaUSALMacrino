@@ -3,9 +3,9 @@ package ar.edu.usal.logistica.web.controlador;
 import ar.edu.usal.logistica.modelo.Usuario;
 import ar.edu.usal.logistica.web.SesionUtil;
 
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 

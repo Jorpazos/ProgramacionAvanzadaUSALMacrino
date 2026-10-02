@@ -3,7 +3,7 @@
 Aplicación web de una empresa de logística: ABM de camiones y choferes, carga de viajes con cálculo de
 tiempo y tanques, y pantalla de chofer para iniciar/finalizar sus viajes.
 
-**Stack:** Java 17 · Maven multi-módulo · Servlets/JSP 6 (Jakarta EE 10, Tomcat 10.1) · JSTL · JDBC puro · MySQL 8 · Bootstrap 5 + SweetAlert2.
+**Stack:** Java 11 · Maven multi-módulo · Servlets/JSP 6 (Jakarta EE 10, Tomcat 10.1) · JSTL · JDBC puro · MySQL 8 · Bootstrap 5 + SweetAlert2.
 
 ## Estructura (entregables del enunciado)
 
@@ -28,7 +28,7 @@ tiempo y tanques, y pantalla de chofer para iniciar/finalizar sus viajes.
 
 ## Paso a paso en IntelliJ IDEA
 
-Requisitos previos: **JDK 17**, **MySQL 8** en marcha (puerto 3306) con **MySQL Workbench 8.0 CE** y **Apache Tomcat 10.1** descargado y descomprimido
+Requisitos previos: **JDK 11**, **MySQL 8** en marcha (puerto 3306) con **MySQL Workbench 8.0 CE** y **Apache Tomcat 10.1** descargado y descomprimido
 (no sirve Tomcat 9, ver la sección de compatibilidad más abajo). Maven viene incluido en IntelliJ.
 
 > La integración con Tomcat (paso 5) es de **IntelliJ IDEA Ultimate**. Con la edición **Community** usá el plugin gratuito
@@ -38,8 +38,8 @@ Requisitos previos: **JDK 17**, **MySQL 8** en marcha (puerto 3306) con **MySQL 
    subcarpeta). Confirmá *Trust Project*. IntelliJ detecta los módulos `logistica-dao` y `logistica-web` y descarga las
    dependencias; esperá a que termine la barra de progreso de abajo a la derecha. Si aparece un cartel *Maven projects
    need to be imported*, hacé clic en **Load Maven Changes** (o en la vista *Maven* el botón de recargar).
-2. **Configurar el JDK 17.** `File > Project Structure > Project`, en *SDK* elegí un JDK 17 (si no está: *Add SDK >
-   Download JDK*). En *Language level* poné 17.
+2. **Configurar el JDK 11.** `File > Project Structure > Project`, en *SDK* elegí un JDK 11 (si no está: *Add SDK >
+   Download JDK*). En *Language level* poné 11.
 3. **Crear la base de datos con MySQL Workbench 8.0 CE.**
    1. Abrí **MySQL Workbench**. En la pantalla de inicio, junto a *MySQL Connections*, tocá el **+** para crear una conexión
       (si ya tenés una `Local instance MySQL80`, podés usarla).

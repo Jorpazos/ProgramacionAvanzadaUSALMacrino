@@ -4,7 +4,6 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.HexFormat;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -49,7 +48,11 @@ public final class PasswordUtil {
     public static String generarToken() {
         byte[] bytes = new byte[32];
         RANDOM.nextBytes(bytes);
-        return HexFormat.of().formatHex(bytes);
+        StringBuilder hex = new StringBuilder(bytes.length * 2);
+        for (byte b : bytes) {
+            hex.append(String.format("%02x", b));
+        }
+        return hex.toString();
     }
 
     private static byte[] pbkdf2(String password, byte[] sal, int iteraciones) {

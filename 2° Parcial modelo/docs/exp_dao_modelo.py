@@ -137,11 +137,13 @@ P + "modelo/Usuario.java": {
  ]},
 P + "modelo/EstimacionViaje.java": {
  "rol": "Resultado del cálculo de un viaje.",
- "defensa": "Un <b>record</b> de Java 17: clase inmutable de solo datos con constructor, getters, equals y toString automáticos. Agrupar los cuatro resultados evita pasar cuatro parámetros sueltos.",
+ "defensa": "Clase <b>inmutable</b> de solo datos (atributos final, sin setters) con constructor, accesores, equals, hashCode y toString. Como el proyecto usa Java 11 no se usa <i>record</i>. Agrupar los cuatro resultados evita pasar cuatro parámetros sueltos.",
  "bloques": [
   ("", "Paquete."),
-  ("/**", "Documentación de cada componente."),
-  ("public record EstimacionViaje", "Declara el record con sus cuatro componentes: kilómetros, días, litros totales y tanques."),
+  ("/**", "Documentación de la clase y de cada parámetro del constructor."),
+  ("public final class EstimacionViaje", "Clase final e inmutable con cuatro atributos: kilómetros, días, litros totales y tanques; se llenan una sola vez en el constructor."),
+  ("public int distanciaKm()", "Accesores con el mismo nombre del atributo (los JSP los llaman como métodos en EL)."),
+  ("public boolean equals", "equals, hashCode y toString escritos a mano: dos estimaciones con los mismos valores son iguales."),
  ]},
 P + "modelo/CalculadoraViaje.java": {
  "rol": "Lógica del cálculo que pide el enunciado: tiempo de viaje y cantidad de tanques.",

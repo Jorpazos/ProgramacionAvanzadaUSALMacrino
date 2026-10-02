@@ -130,7 +130,7 @@ J + "admin/viajes/lista.jsp": {
   ("<div class=\"d-flex", "Título y botón «Cargar viaje»."),
   ("<table class=\"table", "Tabla de viajes y sus encabezados."),
   ("<c:forEach var=\"viaje\"", "Una fila por viaje: id, chofer, camión, recorrido."),
-  ("<td class=\"text-end\">${viaje.estimacion.distanciaKm()}", "Km, días y tanques (los accesores del record se llaman como métodos en EL)."),
+  ("<td class=\"text-end\">${viaje.estimacion.distanciaKm()}", "Km, días y tanques (los accesores de EstimacionViaje se llaman como métodos en EL)."),
   ("<c:choose>", "Color del estado."),
   ("<td><c:out value=\"${viaje.fechaCargaFormateada}\"/>", "Fecha de carga."),
   ("<c:if test=\"${empty viajes}\">", "Mensaje de lista vacía."),

@@ -42,7 +42,7 @@ EXPLICACIONES = {
   ("", "Declaración XML y espacio de nombres del POM."),
   ("<modelVersion>", "Versión del modelo de POM (siempre 4.0.0) y coordenadas del proyecto: groupId, artifactId y versión. <b>packaging pom</b> indica que es un agregador sin código propio."),
   ("<modules>", "Lista los dos módulos hijos; Maven los compila en el orden correcto (primero DAO porque web depende de él)."),
-  ("<properties>", "Java 17 para todos los módulos y UTF-8 como codificación de los fuentes (tildes correctas)."),
+  ("<properties>", "Java 11 para todos los módulos y UTF-8 como codificación de los fuentes (tildes correctas)."),
   ("<dependencyManagement>", "Define la versión de logistica-dao una sola vez; el módulo web la referencia sin repetir la versión."),
  ]},
 "logistica-dao/pom.xml": {

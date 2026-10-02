@@ -26,6 +26,62 @@ tiempo y tanques, y pantalla de chofer para iniciar/finalizar sus viajes.
 4. **Desplegar** el WAR en Tomcat 10.1 (carpeta `webapps/`). La aplicación queda en
    `http://localhost:8080/logistica/`.
 
+## Paso a paso en IntelliJ IDEA
+
+Requisitos previos: **JDK 17**, **MySQL 8** en marcha (puerto 3306) y **Apache Tomcat 10.1** descargado y descomprimido
+(no sirve Tomcat 9, ver la sección de compatibilidad más abajo). Maven viene incluido en IntelliJ.
+
+> La integración con Tomcat (paso 5) es de **IntelliJ IDEA Ultimate**. Con la edición **Community** usá el plugin gratuito
+> *Smart Tomcat* (ver "Alternativa para Community").
+
+1. **Abrir el proyecto.** `File > Open…` y elegí la carpeta `2° Parcial modelo` (la que contiene el `pom.xml` padre, no una
+   subcarpeta). Confirmá *Trust Project*. IntelliJ detecta los módulos `logistica-dao` y `logistica-web` y descarga las
+   dependencias; esperá a que termine la barra de progreso de abajo a la derecha. Si aparece un cartel *Maven projects
+   need to be imported*, hacé clic en **Load Maven Changes** (o en la vista *Maven* el botón de recargar).
+2. **Configurar el JDK 17.** `File > Project Structure > Project`, en *SDK* elegí un JDK 17 (si no está: *Add SDK >
+   Download JDK*). En *Language level* poné 17.
+3. **Crear la base de datos.** Con MySQL corriendo, ejecutá los dos scripts de la carpeta `db/`, ya sea por consola
+   (`mysql -u root -p < db/01_ddl_logistica.sql` y luego `db/02_datos_iniciales.sql`) o abriendo cada archivo en IntelliJ
+   y ejecutándolo con el botón verde *Execute* sobre una conexión de la pestaña *Database*. El primer script **borra y
+   recrea** la base `logistica`; el segundo carga los usuarios de prueba.
+4. **Ajustar las credenciales.** Si tu MySQL no usa `root` / `root`, editá `logistica-dao/src/main/resources/db.properties`
+   (`db.user`, `db.password`, y `db.url` si el puerto es otro).
+5. **Configurar Tomcat en IntelliJ (Ultimate).**
+   1. `Run > Edit Configurations… > + > Tomcat Server > Local`.
+   2. En *Application server* tocá **Configure…** y seleccioná la carpeta donde descomprimiste Tomcat 10.1.
+   3. Pestaña **Deployment** > `+` > **Artifact…** > elegí **`logistica-web:war exploded`**.
+   4. En *Application context* dejá **`/logistica`** (así la URL coincide con la de este README).
+   5. Pestaña **Server**: *URL* = `http://localhost:8080/logistica/`; si querés que abra el navegador solo, dejá tildado
+      *After launch*. Aplicá con **OK**.
+6. **Compilar.** En la vista *Maven* (panel derecho) > `logistica-parent > Lifecycle > clean` y luego `install` (o desde
+   la terminal de IntelliJ: `mvn clean install`). Es importante hacerlo al menos una vez para que `logistica-web`
+   encuentre el módulo `logistica-dao`.
+7. **Ejecutar.** Elegí la configuración de Tomcat creada arriba y presioná el botón verde **Run** (▶) o **Debug** (🐞).
+   En la consola *Services/Run* debe aparecer algo como `Server startup in [...] milliseconds`.
+8. **Ver la página funcionando.** Abrí **http://localhost:8080/logistica/**. Te redirige al login: entrá con
+   `admin` / `admin123` (administrador: ABM de choferes, camiones y carga de viajes) o con `30111222` / `chofer123`
+   (chofer: ve sus viajes y puede iniciarlos/finalizarlos). Ver tabla de *Usuarios de prueba* más abajo.
+
+### Alternativa para IntelliJ Community (plugin Smart Tomcat)
+
+1. `File > Settings > Plugins > Marketplace`, buscá **Smart Tomcat**, instalalo y reiniciá el IDE.
+2. `Run > Edit Configurations… > + > Smart Tomcat`.
+3. *Tomcat Server*: la carpeta de Tomcat 10.1 · *Deployment directory*: `logistica-web/src/main/webapp` ·
+   *Context path*: `/logistica` · *Server port*: `8080`.
+4. Antes de correr, compilá con `mvn clean install` (paso 6) y ejecutá la configuración con ▶. La página queda en
+   `http://localhost:8080/logistica/`.
+
+### Problemas frecuentes
+
+| Síntoma | Causa / solución |
+|---|---|
+| `Communications link failure` o `Access denied for user` al entrar | MySQL apagado o credenciales distintas: revisá el paso 4. También funcionan las variables de entorno `DB_URL`, `DB_USER`, `DB_PASSWORD` en la configuración de Run. |
+| `Unknown database 'logistica'` / tablas inexistentes | No se corrieron los scripts de `db/` (paso 3). |
+| `ClassNotFoundException: javax.servlet...` o 404 en todas las páginas | Se está usando Tomcat 9; hace falta **Tomcat 10.1+**. |
+| Aparece `logistica-web:war exploded` pero no `logistica-dao` | Recargá Maven y corré `mvn clean install` (paso 6). |
+| La URL da 404 | Verificá que el *Application context* sea `/logistica` y que el puerto 8080 no lo use otro programa. |
+| Caracteres raros (`Ã³`) | Confirmá que los archivos se abren en UTF-8 (`File > Settings > Editor > File Encodings`). |
+
 ## Usuarios de prueba
 
 | Perfil | Usuario | Contraseña |

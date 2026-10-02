@@ -13,10 +13,10 @@ import ar.edu.usal.logistica.modelo.Chofer;
 import ar.edu.usal.logistica.modelo.Destino;
 import ar.edu.usal.logistica.modelo.Viaje;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.net.URLEncoder;

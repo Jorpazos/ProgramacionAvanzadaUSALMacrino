@@ -3,7 +3,7 @@
 Aplicación web de una empresa de logística: ABM de camiones y choferes, carga de viajes con cálculo de
 tiempo y tanques, y pantalla de chofer para iniciar/finalizar sus viajes.
 
-**Stack:** Java 11 · Maven multi-módulo · Servlets/JSP 6 (Jakarta EE 10, Tomcat 10.1) · JSTL · JDBC puro · MySQL 8 · Bootstrap 5 + SweetAlert2.
+**Stack:** Java 11 · Maven multi-módulo · Servlets 4.0/JSP 2.3 (`javax.servlet`, Tomcat 9.0) · JSTL · JDBC puro · MySQL 8 · Bootstrap 5 + SweetAlert2.
 
 ## Estructura (entregables del enunciado)
 
@@ -16,7 +16,7 @@ tiempo y tanques, y pantalla de chofer para iniciar/finalizar sus viajes.
 ## Cómo ejecutarlo, paso a paso
 
 Requisitos previos: **JDK 11** (obligatorio, no usar otra versión), **MySQL 8** en marcha (puerto 3306) con **MySQL Workbench 8.0 CE**
-y **Apache Tomcat 10.1** descargado y descomprimido (no sirve Tomcat 9, ver la sección de compatibilidad más abajo).
+y **Apache Tomcat 9.0** instalado (el instalador de Windows crea el servicio `Tomcat9`; no sirve Tomcat 10 o superior, ver la sección de compatibilidad más abajo).
 Todo se hace desde las interfaces de Workbench e IntelliJ, sin escribir comandos en la terminal.
 
 ### 1. Cargar la base de datos en MySQL Workbench
@@ -53,18 +53,28 @@ Todo se hace desde las interfaces de Workbench e IntelliJ, sin escribir comandos
 
 Si el panel Maven aparece vacío, tocá 🔄 *Reload All Maven Projects* arriba del panel.
 
-### 4. Configurar Tomcat 10.1 (IntelliJ Ultimate)
+### 4. Configurar Tomcat 9.0 (IntelliJ Ultimate)
+
+> **Antes de empezar:** si el servicio **Tomcat9** está corriendo, detenelo para liberar el puerto 8080. Abrí **Monitor Tomcat**
+> (Menú Inicio > *Apache Tomcat 9.0 Tomcat9* > *Monitor Tomcat*, queda en la bandeja del sistema junto al reloj), tocá
+> **Stop** y, si querés que no arranque solo con Windows, cambiá *Startup type* a *Manual* en `Configure Tomcat`.
+> Con el servicio andando, IntelliJ no puede iniciar su propio Tomcat (puerto 8080 ocupado).
 
 1. `Run > Edit Configurations… > + > Tomcat Server > Local`.
-2. En *Application server* tocá **Configure…** y elegí la carpeta donde descomprimiste Tomcat 10.1.
+2. En *Application server* tocá **Configure…** y elegí la carpeta de instalación de Tomcat 9.0. La encontrás en el Menú Inicio >
+   *Apache Tomcat 9.0 Tomcat9* > **Tomcat 9.0 Program Directory**; normalmente es
+   `C:\Program Files\Apache Software Foundation\Tomcat 9.0`.
 3. Pestaña **Deployment** > `+` > **Artifact…** > **`logistica-web:war exploded`**.
 4. En *Application context* poné **`/logistica`**.
 5. Pestaña **Server**: *URL* = `http://localhost:8080/logistica/`. Aplicá con **OK**.
 
 **IntelliJ Community** (sin Tomcat integrado): instalá el plugin gratuito **Smart Tomcat** (`File > Settings > Plugins >
 Marketplace`, reiniciá el IDE) y usá `Run > Edit Configurations… > + > Smart Tomcat` con *Tomcat Server* = carpeta de
-Tomcat 10.1, *Deployment directory* = `logistica-web/src/main/webapp`, *Context path* = `/logistica` y *Server port* = `8080`.
+Tomcat 9.0, *Deployment directory* = `logistica-web/src/main/webapp`, *Context path* = `/logistica` y *Server port* = `8080`.
 Compilá antes con el paso 3.
+
+**Alternativa sin IntelliJ:** con el servicio Tomcat9 andando, copiá `logistica-web/target/logistica.war` a la carpeta
+`webapps` de Tomcat 9.0 (puede pedir permisos de administrador) y entrá a `http://localhost:8080/logistica/`.
 
 ### 5. Ejecutar y entrar
 
@@ -84,8 +94,9 @@ la **primera línea que diga `[ERROR]`**.
 | `invalid target release`, `release version 11 not supported` o error de compilación en `logistica-dao` | Maven usa otro JDK: repetí el paso 2 (SDK, *Language level* y **JRE del Runner de Maven**, todos en 11) y volvé a correr **clean** y **package**. |
 | `Communications link failure` o `Access denied for user` al entrar | MySQL apagado o credenciales distintas: revisá el paso 1.6. |
 | `Unknown database 'logistica'` / tablas inexistentes | No se corrieron los scripts de `db/` o se ejecutó solo una parte: repetí el paso 1 sin seleccionar texto. |
-| `ClassNotFoundException: javax.servlet...` o 404 en todas las páginas | Se está usando Tomcat 9; hace falta **Tomcat 10.1+**. |
+| `ClassNotFoundException: javax.servlet...` o 404 en todas las páginas | Se está usando Tomcat 10 o superior; hace falta **Tomcat 9.0**. |
 | Aparece `logistica-web:war exploded` pero falta `logistica-dao`, o el panel Maven está vacío | Recargá Maven (🔄) y repetí **clean** y **package** (paso 3). |
+| `Address already in use` / `Port 8080 is already in use` al arrancar | El servicio **Tomcat9** de Windows sigue corriendo: pararlo desde **Monitor Tomcat** (botón *Stop*) y volver a ejecutar. |
 | La URL da 404 | Verificá que el *Application context* sea `/logistica` y que el puerto 8080 no lo use otro programa. |
 | Caracteres raros (`Ã³`) | Confirmá que los archivos se abren en UTF-8 (`File > Settings > Editor > File Encodings`). |
 
@@ -99,13 +110,11 @@ la **primera línea que diga `[ERROR]`**.
 
 El usuario de cada chofer es su DNI; la contraseña inicial la define el administrador al crearlo.
 
-## ⚠ Compatibilidad con Tomcat (javax vs jakarta)
+## Compatibilidad con Tomcat (javax vs jakarta)
 
-Esta solución usa **Jakarta EE 10** (`jakarta.servlet.*`, JSTL `jakarta.tags.*`) y requiere **Tomcat 10.1 o superior**.
-Los ejemplos de clase del profesor usan `javax.servlet` (Servlet 4.0, **Tomcat 9**). Si el examen se rinde con Tomcat 9,
-hay que migrar la solución: reemplazar `jakarta.servlet` por `javax.servlet` en los imports, las dependencias del
-`pom.xml` (`javax.servlet-api 4.0.1`, `javax.servlet.jsp-api 2.3.3`, `jstl 1.2`) y los URI de JSTL
-(`http://java.sun.com/jsp/jstl/core`, etc.), y el `web.xml` a la versión 4.0.
+Esta solución usa `javax.servlet.*` (Servlet 4.0, JSP 2.3, JSTL 1.2 con las URI `http://java.sun.com/jsp/jstl/...`) y **requiere
+Tomcat 9.0**, el mismo que usan los ejemplos de clase. No funciona en Tomcat 10 o superior, que cambió los paquetes a
+`jakarta.servlet.*`. Probado desplegando el WAR en Apache Tomcat 9.0.98 con JDK 11.
 
 ## Reglas de negocio implementadas
 

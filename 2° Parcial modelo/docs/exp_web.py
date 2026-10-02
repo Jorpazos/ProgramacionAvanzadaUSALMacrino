@@ -13,7 +13,8 @@ W + "SesionUtil.java": {
   ("/** Devuelve el valor de la cookie", "Recorre las cookies de la request y devuelve el token de RECORDARME, o null."),
   ("/** Crea la cookie persistente", "Crea la cookie de sesión recordada con vida de 30 días."),
   ("/** Borra del navegador", "Expira (maxAge 0) la cookie de recordarme y también JSESSIONID: cumple con limpiar las cookies al cerrar sesión."),
-  ("private static Cookie crearCookie", "Arma la cookie con sus protecciones: HttpOnly, Secure si la conexión es HTTPS, path del contexto y SameSite=Lax."),
+  ("private static Cookie crearCookie", "Arma la cookie con sus protecciones: HttpOnly, Secure si la conexión es HTTPS y path del contexto."),
+  ("private static void enviarCookie", "Servlet 4.0 (Tomcat 9) no permite poner SameSite en la clase Cookie, así que se arma la cabecera <b>Set-Cookie</b> a mano agregando <b>SameSite=Lax</b>."),
   ("private static String rutaCookie", "El path de la cookie es el contexto de la aplicación (/logistica) para que solo viaje hacia esta app."),
  ]},
 W + "filtro/EncodingFilter.java": {
@@ -21,7 +22,7 @@ W + "filtro/EncodingFilter.java": {
  "defensa": "Sin esto, los nombres con tilde o eñe (Pérez, Muñoz) llegarían deformados desde los formularios. Está declarado con la anotación @WebFilter (contraste con el filtro de autenticación, declarado en web.xml).",
  "bloques": [
   ("", "Paquete."),
-  ("import jakarta", "@imports"),
+  ("import javax", "@imports"),
   ("/** Fuerza UTF-8", "@WebFilter lo registra para todas las URLs (/*)."),
   ("public void doFilter", "Establece la codificación de request y response en UTF-8 y continúa con <b>chain.doFilter</b>, que pasa al siguiente filtro o servlet."),
  ]},

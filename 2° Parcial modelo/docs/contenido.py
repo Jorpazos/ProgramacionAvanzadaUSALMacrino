@@ -130,6 +130,6 @@ CAPITULOS_FINALES = [
  ("li", "Ejecutar <b>db/01_ddl_logistica.sql</b> y luego <b>db/02_datos_iniciales.sql</b> en MySQL 8."),
  ("li", "Ajustar usuario y clave de la base en <b>logistica-dao/src/main/resources/db.properties</b> (o variables DB_USER y DB_PASSWORD)."),
  ("li", "<b>mvn clean package</b> en la raíz: genera <b>logistica-web/target/logistica.war</b>."),
- ("li", "Copiar el WAR a la carpeta webapps de <b>Tomcat 10.1</b> y abrir <b>http://localhost:8080/logistica/</b>."),
+ ("li", "Copiar el WAR a la carpeta webapps de <b>Tomcat 9.0</b> y abrir <b>http://localhost:8080/logistica/</b>."),
  ("li", "Usuarios de prueba: admin / admin123; 30111222 / chofer123; 28555666 / chofer123."),
 ]

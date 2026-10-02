@@ -62,10 +62,9 @@ EXPLICACIONES = {
   ("<parent>", "Hereda del padre."),
   ("<artifactId>logistica-web", "Módulo web: packaging <b>war</b>."),
   ("<dependencies>", "Dependencia del módulo DAO (compile)."),
-  ("<groupId>jakarta.servlet</groupId>", "Jakarta Servlet 6.0 (provided)."),
-  ("jsp-api", "Jakarta JSP 3.1 (provided): necesaria para compilar las clases que usan JSP."),
-  ("org.glassfish.web", "Implementación de JSTL 3.0 (las etiquetas c:, fmt:, fn:). Se excluye la API de EL porque Tomcat ya la trae y duplicarla causa errores."),
-  ("<artifactId>jakarta.servlet.jsp.jstl-api", "API de JSTL, con la misma exclusión de EL."),
+  ("<groupId>javax.servlet</groupId>", "Servlet 4.0.1 (provided): la versión de Tomcat 9.0."),
+  ("jsp-api", "JSP 2.3.3 (provided): necesaria para compilar las clases que usan JSP."),
+  ("<artifactId>jstl", "JSTL 1.2 (las etiquetas c:, fmt:, fn:): API e implementación en un solo jar, dentro del WAR porque Tomcat no lo trae."),
   ("<build>", "Nombre final del WAR (<b>logistica.war</b>) → contexto /logistica, y versión del plugin que arma el WAR."),
  ]},
 "logistica-dao/src/main/resources/db.properties": {
@@ -82,7 +81,7 @@ EXPLICACIONES = {
  "rol": "Descriptor de despliegue. Cumple el punto «servlets configurados por anotaciones <b>y</b> web.xml»: acá se declaran LoginServlet y LogoutServlet y el filtro de autenticación; los demás servlets usan @WebServlet.",
  "defensa": "Mostrar las dos formas de configuración es un requisito explícito del punto 08. Elegí web.xml para login/logout y seguridad porque son piezas de infraestructura que conviene ver centralizadas, y anotaciones para los controladores de negocio, que quedan autodocumentados con su URL.",
  "bloques": [
-  ("", "Cabecera XML y raíz <b>web-app</b> versión 6.0 (Jakarta EE 10, Tomcat 10.1)."),
+  ("", "Cabecera XML y raíz <b>web-app</b> versión 4.0 (Servlet 4.0, Tomcat 9.0)."),
   ("<display-name>", "Nombre de la aplicación y comentario sobre qué se declara acá y qué por anotaciones."),
   ("<servlet-name>LoginServlet", "Declara el servlet de login (clase) y lo mapea a la URL <b>/login</b>."),
   ("<servlet-name>LogoutServlet", "Declara el servlet de logout y lo mapea a <b>/logout</b>."),

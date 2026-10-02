@@ -28,7 +28,7 @@ tiempo y tanques, y pantalla de chofer para iniciar/finalizar sus viajes.
 
 ## Paso a paso en IntelliJ IDEA
 
-Requisitos previos: **JDK 17**, **MySQL 8** en marcha (puerto 3306) y **Apache Tomcat 10.1** descargado y descomprimido
+Requisitos previos: **JDK 17**, **MySQL 8** en marcha (puerto 3306) con **MySQL Workbench 8.0 CE** y **Apache Tomcat 10.1** descargado y descomprimido
 (no sirve Tomcat 9, ver la sección de compatibilidad más abajo). Maven viene incluido en IntelliJ.
 
 > La integración con Tomcat (paso 5) es de **IntelliJ IDEA Ultimate**. Con la edición **Community** usá el plugin gratuito
@@ -40,10 +40,22 @@ Requisitos previos: **JDK 17**, **MySQL 8** en marcha (puerto 3306) y **Apache T
    need to be imported*, hacé clic en **Load Maven Changes** (o en la vista *Maven* el botón de recargar).
 2. **Configurar el JDK 17.** `File > Project Structure > Project`, en *SDK* elegí un JDK 17 (si no está: *Add SDK >
    Download JDK*). En *Language level* poné 17.
-3. **Crear la base de datos.** Con MySQL corriendo, ejecutá los dos scripts de la carpeta `db/`, ya sea por consola
-   (`mysql -u root -p < db/01_ddl_logistica.sql` y luego `db/02_datos_iniciales.sql`) o abriendo cada archivo en IntelliJ
-   y ejecutándolo con el botón verde *Execute* sobre una conexión de la pestaña *Database*. El primer script **borra y
-   recrea** la base `logistica`; el segundo carga los usuarios de prueba.
+3. **Crear la base de datos con MySQL Workbench 8.0 CE.**
+   1. Abrí **MySQL Workbench**. En la pantalla de inicio, junto a *MySQL Connections*, tocá el **+** para crear una conexión
+      (si ya tenés una `Local instance MySQL80`, podés usarla).
+   2. Completá: *Connection Name* = `logistica` (o el que quieras) · *Hostname* = `localhost` · *Port* = `3306` ·
+      *Username* = `root`. Con **Store in Vault…** guardá la contraseña. Estos datos deben coincidir con los de
+      `db.properties` (`localhost:3306`, usuario `root`, contraseña `root` por defecto); si tu `root` tiene otra
+      contraseña, usá la tuya y cambiala en el paso 4.
+   3. Tocá **Test Connection**; debe decir *Successfully made the MySQL connection*. Después **OK** y doble clic sobre la
+      conexión para abrirla. Si falla, el servicio MySQL80 no está corriendo (Windows: `services.msc` > *MySQL80* > Iniciar).
+   4. `File > Open SQL Script…` y elegí **`db/01_ddl_logistica.sql`**. Ejecutalo completo con el rayo **⚡ Execute**
+      (o `Ctrl+Shift+Enter`). Esto **borra y recrea** la base `logistica`, con sus tablas y stored procedures.
+   5. Repetí con **`db/02_datos_iniciales.sql`** (carga los usuarios y datos de prueba).
+   6. Verificá: en el panel *Navigator > SCHEMAS* tocá el botón de refrescar; debe aparecer el esquema **`logistica`** con
+      las tablas `usuario`, `chofer`, `camion`, `viaje`, `distancia`, etc. Una consulta rápida:
+      `SELECT username, rol FROM logistica.usuario;` debe devolver `admin` y los dos choferes.
+   (Alternativa por consola: `mysql -u root -p < db/01_ddl_logistica.sql` y luego `db/02_datos_iniciales.sql`.)
 4. **Ajustar las credenciales.** Si tu MySQL no usa `root` / `root`, editá `logistica-dao/src/main/resources/db.properties`
    (`db.user`, `db.password`, y `db.url` si el puerto es otro).
 5. **Configurar Tomcat en IntelliJ (Ultimate).**
@@ -76,7 +88,7 @@ Requisitos previos: **JDK 17**, **MySQL 8** en marcha (puerto 3306) y **Apache T
 | Síntoma | Causa / solución |
 |---|---|
 | `Communications link failure` o `Access denied for user` al entrar | MySQL apagado o credenciales distintas: revisá el paso 4. También funcionan las variables de entorno `DB_URL`, `DB_USER`, `DB_PASSWORD` en la configuración de Run. |
-| `Unknown database 'logistica'` / tablas inexistentes | No se corrieron los scripts de `db/` (paso 3). |
+| `Unknown database 'logistica'` / tablas inexistentes | No se corrieron los scripts de `db/` en Workbench (paso 3), o se ejecutó solo una parte: usá *Execute* sin seleccionar texto para correr todo el script. |
 | `ClassNotFoundException: javax.servlet...` o 404 en todas las páginas | Se está usando Tomcat 9; hace falta **Tomcat 10.1+**. |
 | Aparece `logistica-web:war exploded` pero no `logistica-dao` | Recargá Maven y corré `mvn clean install` (paso 6). |
 | La URL da 404 | Verificá que el *Application context* sea `/logistica` y que el puerto 8080 no lo use otro programa. |

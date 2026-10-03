@@ -9,6 +9,7 @@ Material ordenado del 2.º cuatrimestre: el **parcial modelo** resuelto y los **
 │   ├── logistica-dao/  logistica-web/  db/  pom.xml
 │   ├── docs/Explicacion_y_Defensa_Parcial.pdf
 │   └── README.md                   ← cómo instalar y ejecutar
+├── Codigo Brian/                   ← proyecto articulos-web que subió Brian (ver su README)
 └── Temas 2do cuatrimestre/         ← un tema por carpeta, cada una con su PDF explicativo
     ├── Tema 01 - JDBC (Statement, PreparedStatement y CallableStatement)/   clases 014 y 015
     ├── Tema 02 - Singleton, DAO con transacciones y Maven multimodulo/        clase 016

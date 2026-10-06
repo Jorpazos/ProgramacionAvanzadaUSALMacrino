@@ -1,42 +1,56 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="/WEB-INF/jsp/comun/taglibs.jspf" %>
-<c:set var="tituloPagina" value="Chofer"/>
-<%@ include file="/WEB-INF/jsp/comun/encabezado.jspf" %>
-<c:set var="esNuevo" value="${empty valores.id}"/>
-<h1 class="h3 mb-3"><c:out value="${esNuevo ? 'Nuevo chofer' : 'Editar chofer'}"/></h1>
-<div class="card shadow-sm">
-    <div class="card-body">
-        <form action="${ctx}/admin/choferes" method="post" class="row g-3">
-            <input type="hidden" name="accion" value="guardar">
-            <input type="hidden" name="id" value="<c:out value='${valores.id}'/>">
-            <div class="col-md-6">
-                <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" required maxlength="50"
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="es_AR"/>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chofer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body>
+<jsp:include page="/WEB-INF/jsp/comun/menu.jsp"/>
+
+<div class="container">
+    <c:set var="esNuevo" value="${empty valores.id}"/>
+    <h2><c:out value="${esNuevo ? 'Nuevo chofer' : 'Modificar chofer'}"/></h2>
+
+    <form method="post" action="${pageContext.request.contextPath}/admin/choferes">
+        <input type="hidden" name="accion" value="guardar">
+        <input type="hidden" name="id" value="<c:out value='${valores.id}'/>">
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="nombre">Nombre</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" required
                        value="<c:out value='${valores.nombre}'/>">
             </div>
-            <div class="col-md-6">
-                <label for="apellido" class="form-label">Apellido</label>
-                <input type="text" class="form-control" id="apellido" name="apellido" required maxlength="50"
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="apellido">Apellido</label>
+                <input type="text" class="form-control" id="apellido" name="apellido" required
                        value="<c:out value='${valores.apellido}'/>">
             </div>
-            <div class="col-md-4">
-                <label for="dni" class="form-label">DNI</label>
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="dni">DNI</label>
                 <input type="text" class="form-control" id="dni" name="dni" required pattern="\d{7,8}"
-                       maxlength="8" inputmode="numeric" title="7 u 8 dígitos" value="<c:out value='${valores.dni}'/>">
+                       title="7 u 8 digitos" value="<c:out value='${valores.dni}'/>">
             </div>
-            <div class="col-md-4">
-                <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="fechaNacimiento">Fecha de nacimiento</label>
                 <input type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento" required
                        value="<c:out value='${valores.fechaNacimiento}'/>">
             </div>
-            <div class="col-md-4">
-                <label for="telefono" class="form-label">Celular</label>
-                <input type="tel" class="form-control" id="telefono" name="telefono" required pattern="\d{8,15}"
-                       maxlength="15" inputmode="numeric" title="Solo números, entre 8 y 15 dígitos"
-                       value="<c:out value='${valores.telefono}'/>">
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="telefono">Celular</label>
+                <input type="text" class="form-control" id="telefono" name="telefono" required pattern="\d{8,15}"
+                       title="Solo numeros, entre 8 y 15 digitos" value="<c:out value='${valores.telefono}'/>">
             </div>
-            <div class="col-md-6">
-                <label for="categoria" class="form-label">Categoría</label>
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="categoria">Categoria</label>
                 <select class="form-select" id="categoria" name="categoria" required>
                     <option value="">Seleccione...</option>
                     <c:forEach var="cat" items="${categorias}">
@@ -46,39 +60,39 @@
                     </c:forEach>
                 </select>
             </div>
-            <c:if test="${esNuevo}">
-                <div class="col-md-6">
-                    <label for="password" class="form-label">Contraseña inicial (usuario = DNI)</label>
-                    <input type="password" class="form-control" id="password" name="password" required minlength="6"
-                           autocomplete="new-password">
-                </div>
-            </c:if>
-            <div class="col-12">
-                <label class="form-label">Camiones que está autorizado a manejar</label>
-                <div class="form-text mb-2">Solo se aceptan camiones cuyas toneladas entren en la categoría elegida.</div>
-                <div class="row">
-                    <c:forEach var="camion" items="${camiones}">
-                        <div class="col-md-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="camionIds"
-                                       id="camion${camion.id}" value="${camion.id}"
-                                       ${camionesSeleccionados.contains(camion.id) ? 'checked' : ''}>
-                                <label class="form-check-label" for="camion${camion.id}">
-                                    <c:out value="${camion.descripcion}"/>
-                                </label>
-                            </div>
-                        </div>
-                    </c:forEach>
-                    <c:if test="${empty camiones}">
-                        <p class="text-muted">No hay camiones cargados todavía.</p>
-                    </c:if>
+        </div>
+
+        <%-- La clave inicial solo se pide al crear --%>
+        <c:if test="${esNuevo}">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label" for="password">Clave inicial</label>
+                    <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                    <div class="form-text">El usuario para entrar sera su DNI.</div>
                 </div>
             </div>
-            <div class="col-12 d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Guardar</button>
-                <a class="btn btn-outline-secondary" href="${ctx}/admin/choferes">Cancelar</a>
-            </div>
-        </form>
-    </div>
+        </c:if>
+
+        <div class="mb-3">
+            <label class="form-label">Camiones autorizados</label>
+            <c:forEach var="camion" items="${camiones}">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="camionIds"
+                           id="camion${camion.id}" value="${camion.id}"
+                           ${camionesSeleccionados.contains(camion.id) ? 'checked' : ''}>
+                    <label class="form-check-label" for="camion${camion.id}">
+                        <c:out value="${camion.descripcion}"/>
+                    </label>
+                </div>
+            </c:forEach>
+            <c:if test="${empty camiones}"><p>No hay camiones cargados todavia.</p></c:if>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="${pageContext.request.contextPath}/admin/choferes" class="btn btn-secondary">Cancelar</a>
+    </form>
 </div>
-<%@ include file="/WEB-INF/jsp/comun/pie.jspf" %>
+
+<jsp:include page="/WEB-INF/jsp/comun/scripts.jsp"/>
+</body>
+</html>

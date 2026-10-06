@@ -1,51 +1,76 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="/WEB-INF/jsp/comun/taglibs.jspf" %>
-<c:set var="tituloPagina" value="Choferes"/>
-<%@ include file="/WEB-INF/jsp/comun/encabezado.jspf" %>
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">Choferes</h1>
-    <a class="btn btn-primary" href="${ctx}/admin/choferes?accion=nuevo">Nuevo chofer</a>
-</div>
-<div class="card shadow-sm">
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="es_AR"/>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Choferes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body>
+<jsp:include page="/WEB-INF/jsp/comun/menu.jsp"/>
+
+<div class="container">
+    <h2>Choferes</h2>
+    <a class="btn btn-primary mb-3" href="${pageContext.request.contextPath}/admin/choferes?accion=nuevo">Nuevo chofer</a>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Apellido y nombre</th><th>DNI</th><th>Nacimiento</th><th>Categoria</th>
+            <th>Celular</th><th>Camiones autorizados</th><th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach var="chofer" items="${choferes}">
             <tr>
-                <th>Apellido y nombre</th><th>DNI</th><th>Nacimiento</th><th>Categoría</th>
-                <th>Celular</th><th>Camiones autorizados</th><th class="text-end">Acciones</th>
+                <td><c:out value="${chofer.nombreCompleto}"/></td>
+                <td><c:out value="${chofer.dni}"/></td>
+                <td><c:out value="${chofer.fechaNacimientoFormateada}"/></td>
+                <td><c:out value="${chofer.categoria}"/></td>
+                <td><c:out value="${chofer.telefono}"/></td>
+                <td>
+                    <c:forEach var="camion" items="${chofer.camionesAutorizados}">
+                        <div><c:out value="${camion.dominio}"/></div>
+                    </c:forEach>
+                </td>
+                <td>
+                    <a class="btn btn-warning btn-sm" href="${pageContext.request.contextPath}/admin/choferes?accion=editar&id=${chofer.id}">Editar</a>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminar(${chofer.id})">Eliminar</button>
+                </td>
             </tr>
-            </thead>
-            <tbody>
-            <c:forEach var="chofer" items="${choferes}">
-                <tr>
-                    <td><c:out value="${chofer.nombreCompleto}"/></td>
-                    <td><c:out value="${chofer.dni}"/></td>
-                    <td><c:out value="${chofer.fechaNacimientoFormateada}"/></td>
-                    <td><span class="badge text-bg-info"><c:out value="${chofer.categoria}"/></span></td>
-                    <td><c:out value="${chofer.telefono}"/></td>
-                    <td>
-                        <c:forEach var="camion" items="${chofer.camionesAutorizados}">
-                            <span class="badge text-bg-secondary"><c:out value="${camion.dominio}"/></span>
-                        </c:forEach>
-                        <c:if test="${empty chofer.camionesAutorizados}"><span class="text-muted">Ninguno</span></c:if>
-                    </td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary"
-                           href="${ctx}/admin/choferes?accion=editar&id=${chofer.id}">Editar</a>
-                        <form action="${ctx}/admin/choferes" method="post" class="d-inline"
-                              data-confirmar="¿Eliminar al chofer ${fn:escapeXml(chofer.nombreCompleto)}? También se elimina su usuario.">
-                            <input type="hidden" name="accion" value="eliminar">
-                            <input type="hidden" name="id" value="${chofer.id}">
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-            </c:forEach>
-            <c:if test="${empty choferes}">
-                <tr><td colspan="7" class="text-center text-muted py-4">Todavía no hay choferes cargados.</td></tr>
-            </c:if>
-            </tbody>
-        </table>
-    </div>
+        </c:forEach>
+        <c:if test="${empty choferes}">
+            <tr><td colspan="7" class="text-center">No hay choferes cargados</td></tr>
+        </c:if>
+        </tbody>
+    </table>
 </div>
-<%@ include file="/WEB-INF/jsp/comun/pie.jspf" %>
+
+<form id="formEliminar" method="post" action="${pageContext.request.contextPath}/admin/choferes">
+    <input type="hidden" name="accion" value="eliminar">
+    <input type="hidden" name="id" id="idEliminar">
+</form>
+<jsp:include page="/WEB-INF/jsp/comun/scripts.jsp"/>
+<script>
+    function confirmarEliminar(id) {
+        Swal.fire({
+            title: 'Eliminar chofer',
+            text: 'Se borra tambien su usuario. Esta accion no se puede deshacer',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Si, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(function (resultado) {
+            if (resultado.isConfirmed) {
+                document.getElementById('idEliminar').value = id;
+                document.getElementById('formEliminar').submit();
+            }
+        });
+    }
+</script>
+</body>
+</html>
